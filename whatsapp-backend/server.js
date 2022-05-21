@@ -4,6 +4,7 @@ import Messages from './dbMessages.js';
 import Pusher from 'pusher';
 import cors from 'cors';
 
+
 // app config
 const app = express();
 const port = process.env.PORT || 9000;
@@ -26,14 +27,16 @@ db.once("open", () => {
     changeStream.on('change', (change) => {
         console.log('A change occured', change);
 
-        if (change.operationType === 'insert') {
+        if (change.operationType === "insert") {
             const messageDetails = change.fullDocument;
-            pusher.trigger('messages', 'inserted', {
+            pusher.trigger("messages", "inserted", {
                 name: messageDetails.name,
-                message: messageDetails.message
+                message: messageDetails.message,
+                timestamp: messageDetails.timestamp,
+                received: messageDetails.received
             })
         } else {
-            console.log('Error triggering Pusher');
+            console.log("Error triggering Pusher");
         }
     })
 })
