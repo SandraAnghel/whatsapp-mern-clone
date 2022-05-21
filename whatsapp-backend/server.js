@@ -10,6 +10,12 @@ const port = process.env.PORT || 9000;
 // middleware
 app.use(express.json());
 
+app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Headers", "*");
+    next();
+});
+
 //DB config
 const connection_url = 'mongodb+srv://sandraISOC:admin@cluster0.czwet.mongodb.net/whatsappdb?retryWrites=true&w=majority';
 mongoose.connect(connection_url);
@@ -27,7 +33,7 @@ db.once("open", () => {
         if (change.operationType === 'insert') {
             const messageDetails = change.fullDocument;
             pusher.trigger('messages', 'inserted', {
-                name: messageDetails.user,
+                name: messageDetails.name,
                 message: messageDetails.message
             })
         } else {
